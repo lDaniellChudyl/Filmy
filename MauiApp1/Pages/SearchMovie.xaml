@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiApp1.Pages.SearchMovie"
+             xmlns:local="clr-namespace:MauiApp1.Converters"
+             Title="Wyszukiwarka"
+             x:Name="SearchPage">
+
+    <ContentPage.Resources>
+        <local:GenresConverter x:Key="GenresConverter"/>
+        <local:RatingConverter x:Key="RatingConverter"/>
+    </ContentPage.Resources>
+
+
+    <ScrollView>
+        <StackLayout>
+            <!-- Tytuł sekcji z filmami na czasie -->
+            <Label Text="{Binding SearchQuery, StringFormat='Wyniki wyszukiwania dla: {0}'}"
+        TextColor="White"
+        FontAttributes="Bold"
+        FontSize="Large"
+        Margin="10,0"/>
+
+            <!-- Kafelki z filmami na czasie -->
+            <CollectionView ItemsSource="{Binding Movies}" x:Name="SearchCollection">
+
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical"
+                                     Span="3" 
+                                     HorizontalItemSpacing="5"
+                                     VerticalItemSpacing="5"/>
+                    <!-- Span oznacza liczbę kolumn -->
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid WidthRequest="550" HeightRequest="450" Margin="10">
+                            <Image Source="{Binding backdrop_path, StringFormat='https://image.tmdb.org/t/p/original/{0}'}" Aspect="AspectFill"/>
+                            <BoxView BackgroundColor="Black" Opacity="0.4" />
+                            <StackLayout>
+                                <HorizontalStackLayout HorizontalOptions="Start" VerticalOptions="Start" HeightRequest="50" Margin="5">
+                                    <FlexLayout AlignItems="Center">
+                                        <Frame BorderColor="white" BackgroundColor="Black" Opacity="0.8" CornerRadius="5" VerticalOptions="Start" Padding="3">
+                                            <FlexLayout AlignItems="Start">
+                                                <Label TextColor="gray" Text="Ocena:" FontSize="14" Margin="0,0,5,0"/>
+                                                <Label TextColor="white" Text="{Binding vote_average, Converter={StaticResource RatingConverter}}" FontSize="14" FontAttributes="Bold"/>
+                                            </FlexLayout>
+                                        </Frame>
+
+                                        <Label Text="/" TextColor="White" Margin="3"/>
+                                        <Label TextColor="White" Text="{Binding vote_count, StringFormat='{0} ocen'}"/>
+                                    </FlexLayout>
+                                </HorizontalStackLayout>
+                                <VerticalStackLayout HorizontalOptions="Start">
+                                    <FlexLayout AlignItems="Start" Direction="Column">
+                                        <Label Text="Dla dorosłych" TextColor="White"
+                                    FontSize="13"
+                                    Margin="3,0" IsVisible="{Binding adult}" FontAttributes="Bold"/>
+
+                                        <Label Text="{Binding title}" TextColor="White"
+                                    FontSize="Medium"
+                                    Margin="10, 0"/>
+                                    </FlexLayout>
+                                </VerticalStackLayout>
+                            </StackLayout>
+
+                            <VerticalStackLayout VerticalOptions="End" Margin="10">
+                                <Label Text="{Binding overview}" TextColor="White" FontSize="12"/>
+                                <FlexLayout Margin="0,5">
+                                    <Frame Padding="2" Background="White" BorderColor="White">
+                                        <Label Text="{Binding genres, Converter={StaticResource GenresConverter}}" FontSize="9" TextColor="Black"/>
+                                    </Frame>
+                                </FlexLayout>
+                                <Label Text="{Binding release_date, StringFormat='Data wydania filmu: {0:D}'}" TextColor="white" FontSize="12"/>
+
+                            </VerticalStackLayout>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Button IsVisible="{Binding ObLoadMoreVisible, Source={x:Reference SearchPage}}" Command="{Binding ShowMoreCommand}" Text="Wyświetl więcej"/>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
